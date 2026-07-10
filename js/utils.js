@@ -34,7 +34,7 @@ export function buildWhatsAppGreeting(lead, campaign){
   const looksLikePhone = !lead.name || /^[+\d][\d\s()-]{5,}$/.test(lead.name.trim());
   const saludoNombre = looksLikePhone ? '¡Hola! 👋' : `¡Hola ${lead.name.trim().split(' ')[0]}! 👋`;
   const campName = campaign ? campaign.name : '';
-  return `${saludoNombre} Soy de *Aura Studio* 🌙. Vimos tu interés en nuestra sesión "${campName}" y queríamos darte la bienvenida. Cualquier consulta sobre precios, fechas o el paquete que más te convenga, aquí estamos para ayudarte. ✨`;
+  return `${saludoNombre} Soy de *Aura Studio* 🌙. Qué bueno que nos escribes por nuestra sesión "${campName}" ✨. Te dejo por aquí nuestros paquetes y precios 📋 para que veas la opción que más se ajuste a lo que buscas. Cuéntame qué fecha tienes en mente y te ayudo a separar tu cupo 📅💛`;
 }
 export function whatsappUrl(phone, message){
   const digits = String(phone||'').replace(/[^\d]/g,'');
