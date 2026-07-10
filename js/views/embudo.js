@@ -1,5 +1,5 @@
 import { state, ui, STATUS_COLUMNS } from '../state.js';
-import { escapeHtml, campaignInfo, toast } from '../utils.js';
+import { escapeHtml, campaignInfo, campaignBadgeHtml, toast } from '../utils.js';
 import { saveLeads } from '../storage.js';
 import { renderView } from '../nav.js';
 import { openClientModal } from '../modals/clientModal.js';
@@ -73,12 +73,11 @@ export function renderKanbanCols(filtered){
 }
 
 function leadCardHtml(l){
-  const c = campaignInfo(l.campaign);
   return `
     <div class="lead-card" data-id="${l.id}">
       <div class="lc-top"><span>${escapeHtml(l.name)||'Sin nombre'}</span><span class="mono">S/.${l.value||0}</span></div>
       <div class="lc-phone">${escapeHtml(l.phone)||'—'}</div>
-      <span class="lc-badge" style="background:${c.color}1A;color:${c.color}">${escapeHtml(c.name)}</span>
+      ${campaignBadgeHtml(l.campaign, 'lc-badge')}
       ${l.notes ? `<div class="lc-notes" title="${escapeHtml(l.notes)}">📝 ${escapeHtml(l.notes)}</div>` : ''}
     </div>
   `;

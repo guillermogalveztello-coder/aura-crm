@@ -55,6 +55,7 @@
   .btn.ok{ background:var(--venta); color:#fff; border-color:var(--venta); }
   .btn.small{ padding:6px 10px; font-size:12px; }
   .btn.danger{ color:var(--danger); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
 
   .kpi-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:20px; }
   .kpi-card{ background:var(--panel); border:1px solid var(--edge); border-radius:14px; padding:16px; }
@@ -81,8 +82,11 @@
   .res-card .rc-phone{ font-size:12px; color:var(--ink-dim); font-family:'IBM Plex Mono',monospace; }
   .rc-money{ display:flex; justify-content:space-between; font-size:13px; }
   .rc-money b{ font-family:'IBM Plex Mono',monospace; }
-  .rc-remaining{ background:var(--panel-2); border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center; font-size:13px; }
-  .rc-remaining b{ color:var(--reserva); font-family:'IBM Plex Mono',monospace; font-size:15px; }
+  .rc-remaining{ border-radius:8px; padding:8px 10px; display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:500; }
+  .rc-remaining b{ font-family:'IBM Plex Mono',monospace; font-size:15px; }
+  .rc-remaining.is-pending{ background:#B5453A1A; color:var(--danger); }
+  .rc-remaining.is-pending b{ color:var(--danger); }
+  .rc-remaining.is-paid{ background:#6E8F5E1A; color:var(--venta); }
   .rc-notes{ font-size:12px; color:var(--ink-dim); font-style:italic; }
   .rc-actions{ display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
 

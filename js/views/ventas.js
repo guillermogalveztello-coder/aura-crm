@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { escapeHtml, campaignInfo } from '../utils.js';
+import { escapeHtml, campaignBadgeHtml } from '../utils.js';
 import { saveLeads } from '../storage.js';
 import { openClientModal } from '../modals/clientModal.js';
 
@@ -24,12 +24,11 @@ export function renderVentas(main){
   if(ventas.length===0) return;
   const body = document.getElementById('ventasBody');
   body.innerHTML = ventas.map(v=>{
-    const c = campaignInfo(v.campaign);
     return `
       <tr data-id="${v.id}">
         <td>${escapeHtml(v.name)}</td>
         <td class="mono">${escapeHtml(v.phone)||'—'}</td>
-        <td><span class="campaign-tag" style="background:${c.color}1A;color:${c.color}">${escapeHtml(c.name)}</span></td>
+        <td>${campaignBadgeHtml(v.campaign)}</td>
         <td class="mono">S/.${v.value||0}</td>
         <td><input type="text" value="${escapeHtml(v.saleDate)}" data-field="saleDate" style="border:1px solid transparent;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:12px;width:90px;"></td>
         <td style="max-width:180px;font-size:12px;color:var(--ink-dim);font-style:italic;">${escapeHtml(v.notes)||'—'}</td>
