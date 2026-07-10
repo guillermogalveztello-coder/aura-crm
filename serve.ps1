@@ -18,8 +18,8 @@ try {
 Write-Host "Aura CRM sirviendo en http://localhost:$Port  (Ctrl+C para detener)"
 
 $mime = @{
-  ".html" = "text/html; charset=utf-8"; ".css" = "text/css"; ".js" = "application/javascript";
-  ".png" = "image/png"; ".jpg" = "image/jpeg"; ".svg" = "image/svg+xml"; ".json" = "application/json";
+  ".html" = "text/html; charset=utf-8"; ".css" = "text/css; charset=utf-8"; ".js" = "application/javascript; charset=utf-8";
+  ".png" = "image/png"; ".jpg" = "image/jpeg"; ".svg" = "image/svg+xml"; ".json" = "application/json; charset=utf-8";
 }
 
 try {
