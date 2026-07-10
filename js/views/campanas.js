@@ -1,6 +1,6 @@
 import { state, CAMPAIGN_COLORS } from '../state.js';
 import { escapeHtml, toast } from '../utils.js';
-import { saveCampaigns } from '../storage.js';
+import { saveCampaigns, deleteCampaignRemote } from '../storage.js';
 import { renderView } from '../nav.js';
 
 export function renderCampanas(main){
@@ -51,13 +51,14 @@ export function renderCampanas(main){
       state.campaigns[key].objective = objective;
       saveCampaigns(); renderView(); toast('Campaña actualizada');
     };
-    item.querySelector('[data-act="delete"]').onclick = ()=>{
+    item.querySelector('[data-act="delete"]').onclick = async ()=>{
       const count = state.leads.filter(l=>l.campaign===key).length;
       if(count>0){
         if(!confirm(`Esta campaña tiene ${count} cliente(s). ¿Eliminarla igual? Los clientes quedarán sin campaña asignada.`)) return;
       }
       delete state.campaigns[key];
-      saveCampaigns(); renderView(); toast('Campaña eliminada');
+      await deleteCampaignRemote(key);
+      renderView(); toast('Campaña eliminada');
     };
   });
 }

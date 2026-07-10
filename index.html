@@ -7,16 +7,36 @@
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<div class="frame">
+<div class="frame" id="appFrame" style="display:none;">
   <aside class="sidebar">
     <div class="logo-wrap"><img src="assets/logo.png" alt="Aura Studio"></div>
     <nav id="nav"></nav>
     <div class="sidebar-footer">
       <button id="refreshBtn">↻ Actualizar datos</button>
+      <button id="exportBtn">⬇ Exportar respaldo</button>
+      <button id="importBtn">⬆ Importar respaldo</button>
+      <input type="file" id="importInput" accept="application/json" style="display:none;">
+      <button id="logoutBtn">Cerrar sesión</button>
       <div class="tiny">Fuente: <span id="dataSourceLabel">cargando...</span></div>
     </div>
   </aside>
   <main id="main"></main>
+</div>
+
+<!-- Login -->
+<div class="overlay show" id="loginOverlay">
+  <div class="modal" style="max-width:360px;">
+    <div class="logo-wrap"><img src="assets/logo.png" alt="Aura Studio"></div>
+    <h3>Iniciar sesión</h3>
+    <form id="loginForm">
+      <div class="field"><label>Correo</label><input id="loginEmail" type="email" required placeholder="tu@correo.com"></div>
+      <div class="field"><label>Contraseña</label><input id="loginPassword" type="password" required placeholder="••••••••"></div>
+      <div id="loginError" style="color:var(--danger);font-size:12px;margin-bottom:8px;"></div>
+      <div class="modal-actions" style="justify-content:stretch;">
+        <button class="btn primary" id="loginSubmit" type="submit" style="width:100%;">Entrar</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- Client / reserve modal -->
