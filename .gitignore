@@ -2,3 +2,7 @@
 Thumbs.db
 .DS_Store
 .git.broken/
+*.stale
+*.old2
+_synctest.txt
+CAMPAÑAS AURA/

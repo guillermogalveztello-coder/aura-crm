@@ -1,5 +1,5 @@
 import { state, ui } from '../state.js';
-import { escapeHtml, toast } from '../utils.js';
+import { escapeHtml, toast, campaignInfo, campaignImageSrc, buildWhatsAppGreeting, whatsappUrl } from '../utils.js';
 import { saveLeads } from '../storage.js';
 import { renderView } from '../nav.js';
 
@@ -30,6 +30,20 @@ function collectAttendees(){
 function populateCampaignSelect(selected){
   const sel = document.getElementById('cCampaign');
   sel.innerHTML = Object.keys(state.campaigns).map(k=>`<option value="${k}" ${k===selected?'selected':''}>${escapeHtml(state.campaigns[k].name)}</option>`).join('');
+  updateCampaignPreview();
+}
+
+function updateCampaignPreview(){
+  const key = document.getElementById('cCampaign').value;
+  const wrap = document.getElementById('campaignPreview');
+  const src = key ? campaignImageSrc(key) : null;
+  if(src){
+    document.getElementById('campaignPreviewImg').src = src;
+    document.getElementById('campaignPreviewLink').href = src;
+    wrap.style.display = '';
+  } else {
+    wrap.style.display = 'none';
+  }
 }
 
 export function openClientModal(id){
@@ -50,6 +64,16 @@ export function openClientModal(id){
 }
 
 export function wireClientModal(){
+  document.getElementById('cCampaign').onchange = updateCampaignPreview;
+  document.getElementById('cWhatsapp').onclick = ()=>{
+    const phone = document.getElementById('cPhone').value.trim();
+    if(!phone){ toast('Ingresa un número de teléfono primero'); return; }
+    const name = document.getElementById('cName').value.trim();
+    const campKey = document.getElementById('cCampaign').value;
+    const campaign = campKey ? campaignInfo(campKey) : null;
+    const message = buildWhatsAppGreeting({ name }, campaign);
+    window.open(whatsappUrl(phone, message), '_blank', 'noopener');
+  };
   document.getElementById('cCancel').onclick = ()=> document.getElementById('clientOverlay').classList.remove('show');
   document.getElementById('cSave').onclick = ()=>{
     const name = document.getElementById('cName').value.trim();

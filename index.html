@@ -28,7 +28,14 @@
       <div class="field"><label>DNI</label><input id="cDni" placeholder="p.ej. 45678912"></div>
       <div class="field"><label>Teléfono</label><input id="cPhone" placeholder="+51 9xx xxx xxx"></div>
     </div>
-    <div class="field"><label>Campaña</label><select id="cCampaign"></select></div>
+    <div class="field">
+      <label>Campaña</label>
+      <select id="cCampaign"></select>
+      <div id="campaignPreview" class="campaign-preview" style="display:none;">
+        <img id="campaignPreviewImg" alt="Arte de campaña">
+        <a id="campaignPreviewLink" href="#" target="_blank" rel="noopener">Ver imagen completa ↗</a>
+      </div>
+    </div>
     <div class="field">
       <label>Asistentes a la sesión</label>
       <div id="attendeesWrap"></div>
@@ -43,6 +50,7 @@
     </div>
     <div class="field"><label>Observaciones</label><textarea id="cNotes" rows="3" placeholder="p.ej. Cliente quiere globos color rosa..."></textarea></div>
     <div class="modal-actions">
+      <button class="btn wa" id="cWhatsapp" type="button">💬 Enviar saludo por WhatsApp</button>
       <button class="btn" id="cCancel">Cancelar</button>
       <button class="btn primary" id="cSave">Guardar</button>
     </div>

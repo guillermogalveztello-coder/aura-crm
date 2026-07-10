@@ -14,3 +14,30 @@ export function campaignBadgeHtml(key, cls='campaign-tag'){
 }
 export function remainingBalance(lead){ return (Number(lead.value)||0) - (Number(lead.paid)||0); }
 export function paymentStatus(lead){ return remainingBalance(lead) > 0 ? 'pending' : 'paid'; }
+
+// Arte de campaña: se busca por coincidencia de nombre (no depende del id interno de la campaña),
+// así funciona aunque la campaña se haya creado desde la UI con una key aleatoria.
+const CAMPAIGN_IMAGE_MAP = [
+  { match: /aura ?kids/i, src: 'assets/campaigns/aurakids.jpg' },
+  { match: /padre.*hij/i, src: 'assets/campaigns/padre-e-hijas.jpg' },
+];
+export function campaignImageSrc(key){
+  const c = campaignInfo(key);
+  if(c.image) return c.image;
+  const found = CAMPAIGN_IMAGE_MAP.find(m => m.match.test(c.name||''));
+  return found ? found.src : null;
+}
+
+// Saludo de WhatsApp: usa el nombre si parece un nombre real (no un número de teléfono),
+// y menciona la campaña de la que vino el lead.
+export function buildWhatsAppGreeting(lead, campaign){
+  const looksLikePhone = !lead.name || /^[+\d][\d\s()-]{5,}$/.test(lead.name.trim());
+  const saludoNombre = looksLikePhone ? '¡Hola! 👋' : `¡Hola ${lead.name.trim().split(' ')[0]}! 👋`;
+  const campName = campaign ? campaign.name : '';
+  return `${saludoNombre} Soy de *Aura Studio* 🌙. Vimos tu interés en nuestra sesión "${campName}" y queríamos darte la bienvenida. Cualquier consulta sobre precios, fechas o el paquete que más te convenga, aquí estamos para ayudarte. ✨`;
+}
+export function whatsappUrl(phone, message){
+  const digits = String(phone||'').replace(/[^\d]/g,'');
+  const withCountry = digits.startsWith('51') ? digits : ('51' + digits.replace(/^0+/,''));
+  return `https://wa.me/${withCountry}?text=${encodeURIComponent(message)}`;
+}
