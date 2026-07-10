@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aura Studio — CRM</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="frame">
+  <aside class="sidebar">
+    <div class="logo-wrap"><img src="assets/logo.png" alt="Aura Studio"></div>
+    <nav id="nav"></nav>
+    <div class="sidebar-footer">
+      <button id="refreshBtn">↻ Actualizar datos</button>
+      <div class="tiny">Fuente: <span id="dataSourceLabel">cargando...</span></div>
+    </div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<!-- Client / reserve modal -->
+<div class="overlay" id="clientOverlay">
+  <div class="modal">
+    <h3 id="clientModalTitle">Agregar cliente</h3>
+    <div class="field"><label>Nombre y apellido del titular</label><input id="cName" placeholder="p.ej. María Fernanda Torres Quispe"></div>
+    <div class="field-row">
+      <div class="field"><label>DNI</label><input id="cDni" placeholder="p.ej. 45678912"></div>
+      <div class="field"><label>Teléfono</label><input id="cPhone" placeholder="+51 9xx xxx xxx"></div>
+    </div>
+    <div class="field"><label>Campaña</label><select id="cCampaign"></select></div>
+    <div class="field">
+      <label>Asistentes a la sesión</label>
+      <div id="attendeesWrap"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Monto total (S/.)</label><input id="cTotal" type="number" min="0" placeholder="p.ej. 250"></div>
+      <div class="field"><label>Adelanto pagado (S/.)</label><input id="cPaid" type="number" min="0" placeholder="p.ej. 50"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Fecha de la sesión</label><input id="cSessionDate" type="date"></div>
+      <div class="field"><label>Hora de la sesión</label><input id="cSessionTime" type="time"></div>
+    </div>
+    <div class="field"><label>Observaciones</label><textarea id="cNotes" rows="3" placeholder="p.ej. Cliente quiere globos color rosa..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn" id="cCancel">Cancelar</button>
+      <button class="btn primary" id="cSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Payment modal -->
+<div class="overlay" id="payOverlay">
+  <div class="modal" style="max-width:360px;">
+    <h3>Registrar abono</h3>
+    <div class="field"><label>Monto abonado ahora (S/.)</label><input id="pAmount" type="number" min="0" placeholder="p.ej. 50"></div>
+    <div class="modal-actions">
+      <button class="btn" id="pCancel">Cancelar</button>
+      <button class="btn primary" id="pSave">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- New campaign modal -->
+<div class="overlay" id="campOverlay">
+  <div class="modal" style="max-width:380px;">
+    <h3>Nueva campaña</h3>
+    <div class="field"><label>Nombre de la campaña</label><input id="nName" placeholder="p.ej. Promo Navidad 2026"></div>
+    <div class="modal-actions">
+      <button class="btn" id="nCancel">Cancelar</button>
+      <button class="btn primary" id="nSave">Crear</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
