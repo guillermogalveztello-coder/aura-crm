@@ -1,5 +1,5 @@
 import { state, ui, STATUS_COLUMNS } from '../state.js';
-import { escapeHtml, campaignInfo, campaignBadgeHtml, toast } from '../utils.js';
+import { escapeHtml, campaignInfo, campaignBadgeHtml, money, toast } from '../utils.js';
 import { saveLeads } from '../storage.js';
 import { renderView } from '../nav.js';
 import { openClientModal } from '../modals/clientModal.js';
@@ -48,9 +48,10 @@ export function renderKanbanCols(filtered){
   if(!cols) return;
   cols.innerHTML = STATUS_COLUMNS.map(col=>{
     const items = filtered.filter(l=>l.status===col.key);
+    const sum = items.reduce((s,l)=>s+(Number(l.value)||0),0);
     return `
       <div class="kanban-col" data-status="${col.key}">
-        <div class="kanban-col-head"><span class="nav-dot" style="background:${col.color}"></span>${col.label}<span class="count">${items.length}</span></div>
+        <div class="kanban-col-head"><span class="nav-dot" style="background:${col.color}"></span>${col.label} (${items.length})<span class="count">${money(sum)}</span></div>
         <div class="kanban-items">
           ${items.length===0 ? '<div class="empty-note">Sin leads aquí</div>' : items.map(l=>leadCardHtml(l)).join('')}
         </div>
@@ -75,7 +76,7 @@ export function renderKanbanCols(filtered){
 function leadCardHtml(l){
   return `
     <div class="lead-card" data-id="${l.id}">
-      <div class="lc-top"><span>${escapeHtml(l.name)||'Sin nombre'}</span><span class="mono">S/.${l.value||0}</span></div>
+      <div class="lc-top"><span>${escapeHtml(l.name)||'Sin nombre'}</span><span class="lc-value">S/.${l.value||0}</span></div>
       <div class="lc-phone">${escapeHtml(l.phone)||'—'}</div>
       ${campaignBadgeHtml(l.campaign, 'lc-badge')}
       ${l.notes ? `<div class="lc-notes" title="${escapeHtml(l.notes)}">📝 ${escapeHtml(l.notes)}</div>` : ''}

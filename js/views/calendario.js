@@ -79,8 +79,10 @@ function renderGrid(){
     cells += `
       <div class="cal-cell ${list.length?'has-sessions':''} ${isToday?'is-today':''} ${isSelected?'is-selected':''}" data-key="${key}">
         <div class="cal-daynum">${d}</div>
-        ${list.slice(0,2).map(l=>`<div class="cal-chip" style="background:${campaignInfo(l.campaign).color}1A;color:${campaignInfo(l.campaign).color}">${escapeHtml((l.name||'').split(' ')[0]||'Sin nombre')}</div>`).join('')}
-        ${list.length>2 ? `<div class="cal-more">+${list.length-2} más</div>` : ''}
+        ${list.length ? `<div class="cal-dots">
+          ${list.slice(0,6).map(l=>`<span class="cal-dot" style="background:${campaignInfo(l.campaign).color}"></span>`).join('')}
+          ${list.length>6 ? `<span class="cal-dot-more">+${list.length-6}</span>` : ''}
+        </div>` : ''}
       </div>
     `;
   }

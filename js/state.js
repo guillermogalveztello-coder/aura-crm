@@ -31,4 +31,6 @@ export const ui = {
   calYear: null,
   calMonth: null,
   calSelected: null,
+  dashboardRange: "todo",
+  ventasPage: 0,
 };
