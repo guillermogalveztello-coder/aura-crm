@@ -129,3 +129,17 @@
 
   .toast{ position:fixed; bottom:22px; right:22px; background:var(--ink); color:#fff; padding:11px 17px; border-radius:8px; font-size:13px; opacity:0; transform:translateY(8px); transition:.2s; pointer-events:none; z-index:60; }
   .toast.show{ opacity:1; transform:translateY(0); }
+
+  .cal-weekdays{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:6px; }
+  .cal-weekdays div{ text-align:center; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-dim); text-transform:uppercase; }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
+  .cal-cell{ background:var(--panel); border:1px solid var(--edge); border-radius:10px; padding:6px; min-height:78px; cursor:pointer; display:flex; flex-direction:column; gap:3px; }
+  .cal-cell.cal-empty{ background:none; border:none; cursor:default; }
+  .cal-cell:not(.cal-empty):hover{ border-color:var(--terracotta-dim); }
+  .cal-cell.has-sessions{ background:var(--panel-2); }
+  .cal-cell.is-today .cal-daynum{ color:var(--terracotta); font-weight:700; }
+  .cal-cell.is-selected{ border-color:var(--terracotta); border-width:2px; }
+  .cal-daynum{ font-size:12px; font-weight:500; }
+  .cal-chip{ font-size:10px; padding:2px 6px; border-radius:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cal-more{ font-size:9.5px; color:var(--ink-dim); }
+  @media (max-width:700px){ .cal-cell{ min-height:56px; } .cal-chip{ display:none; } }

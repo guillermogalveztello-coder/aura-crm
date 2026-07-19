@@ -28,4 +28,7 @@ export const ui = {
   editingId: null,
   payingId: null,
   dragId: null,
+  calYear: null,
+  calMonth: null,
+  calSelected: null,
 };
