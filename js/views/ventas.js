@@ -16,7 +16,7 @@ export function renderVentas(main){
     <div class="panel">
       ${ventas.length===0 ? '<div class="empty-note">Todavía no hay ventas concretadas.</div>' : `
       <table>
-        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Campaña</th><th>Total</th><th>Fecha de venta</th><th>Observaciones</th><th></th></tr></thead>
+        <thead><tr><th>Nombre</th><th>Teléfono</th><th>Campaña</th><th>Vendedor</th><th>Total</th><th>Fecha de venta</th><th>Observaciones</th><th></th></tr></thead>
         <tbody id="ventasBody"></tbody>
       </table>`}
     </div>
@@ -29,6 +29,7 @@ export function renderVentas(main){
         <td>${escapeHtml(v.name)}</td>
         <td class="mono">${escapeHtml(v.phone)||'—'}</td>
         <td>${campaignBadgeHtml(v.campaign)}</td>
+        <td>${escapeHtml(v.seller)||'—'}</td>
         <td class="mono">S/.${v.value||0}</td>
         <td><input type="text" value="${escapeHtml(v.saleDate)}" data-field="saleDate" style="border:1px solid transparent;background:transparent;font-family:'IBM Plex Mono',monospace;font-size:12px;width:90px;"></td>
         <td style="max-width:180px;font-size:12px;color:var(--ink-dim);font-style:italic;">${escapeHtml(v.notes)||'—'}</td>

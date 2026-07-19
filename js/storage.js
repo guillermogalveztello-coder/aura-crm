@@ -18,6 +18,7 @@ function toDbLead(l){
     notes: l.notes || '',
     lead_date: l.date || '',
     sale_date: l.saleDate || '',
+    seller: l.seller || null,
   };
 }
 function fromDbLead(r){
@@ -36,6 +37,7 @@ function fromDbLead(r){
     notes: r.notes || '',
     date: r.lead_date || '',
     saleDate: r.sale_date || '',
+    seller: r.seller || '',
   };
 }
 function toDbCampaign(key, c){

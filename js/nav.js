@@ -4,10 +4,12 @@ import { renderReservas } from './views/reservas.js';
 import { renderVentas } from './views/ventas.js';
 import { renderCampanas } from './views/campanas.js';
 import { renderCalendario } from './views/calendario.js';
+import { renderDashboard } from './views/dashboard.js';
 
 export function renderNav(){
   const nav = document.getElementById('nav');
   const items = [
+    {key:'dashboard', label:'Dashboard', color:'var(--terracotta)'},
     {key:'embudo', label:'Embudo de ventas', color:'var(--terracotta)'},
     {key:'reservas', label:'Reservas', color:'var(--reserva)'},
     {key:'calendario', label:'Calendario', color:'var(--terracotta)'},
@@ -26,6 +28,7 @@ export function renderNav(){
 
 export function renderView(){
   const main = document.getElementById('main');
+  if(ui.view === 'dashboard') return renderDashboard(main);
   if(ui.view === 'embudo') return renderEmbudo(main);
   if(ui.view === 'reservas') return renderReservas(main);
   if(ui.view === 'calendario') return renderCalendario(main);

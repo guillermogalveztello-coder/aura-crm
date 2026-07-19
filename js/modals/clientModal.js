@@ -54,6 +54,7 @@ export function openClientModal(id){
   document.getElementById('cDni').value = lead ? lead.dni||'' : '';
   document.getElementById('cPhone').value = lead ? lead.phone||'' : '';
   populateCampaignSelect(lead ? lead.campaign : (ui.filterCampaign!=='todas'?ui.filterCampaign:Object.keys(state.campaigns)[0]));
+  document.getElementById('cSeller').value = lead ? lead.seller||'' : '';
   renderAttendeeRows(lead ? lead.attendees : []);
   document.getElementById('cTotal').value = lead && lead.value ? lead.value : '';
   document.getElementById('cPaid').value = lead && lead.paid ? lead.paid : '';
@@ -84,6 +85,7 @@ export function wireClientModal(){
       dni: document.getElementById('cDni').value.trim(),
       phone,
       campaign: document.getElementById('cCampaign').value,
+      seller: document.getElementById('cSeller').value,
       attendees: collectAttendees(),
       value: Number(document.getElementById('cTotal').value) || 0,
       paid: Number(document.getElementById('cPaid').value) || 0,
