@@ -1,5 +1,5 @@
 import { state, ui } from '../state.js';
-import { escapeHtml, money, campaignInfo } from '../utils.js';
+import { escapeHtml, money, campaignInfo, remainingBalance } from '../utils.js';
 import { openClientModal } from '../modals/clientModal.js';
 
 const SELLERS = ['Guillermo', 'Andrea'];
@@ -94,13 +94,24 @@ export function renderDashboard(main){
     return { key: seller || 'sin-asignar', label: seller || 'Sin asignar', ventas: ventas.length, ingresos, ticket };
   }).filter(v=>v.ventas>0 || v.key!=='sin-asignar');
 
+  const reservas = leads.filter(l=>l.status==='propuesta');
+  const porVendedorReservas = [...SELLERS, ''].map(seller=>{
+    const items = reservas.filter(l=>(l.seller||'')===seller);
+    const pendiente = items.reduce((s,l)=>s+remainingBalance(l),0);
+    return { key: seller || 'sin-asignar', label: seller || 'Sin asignar', reservas: items.length, pendiente };
+  }).filter(v=>v.reservas>0 || v.key!=='sin-asignar');
+
   const selectedCampaign = ui.dashSelectedCampaign || NONE;
   const selectedSeller = ui.dashSelectedSeller || NONE;
+  const selectedReservaSeller = ui.dashSelectedReservaSeller || NONE;
   const campaignDetailList = selectedCampaign==='sin-campania' ? sinCampania
     : selectedCampaign!==NONE ? leads.filter(l=>l.campaign===selectedCampaign) : [];
   const sellerDetailList = selectedSeller===NONE ? []
     : selectedSeller==='sin-asignar' ? ganado.filter(l=>!l.seller)
     : ganado.filter(l=>l.seller===selectedSeller);
+  const reservaDetailList = selectedReservaSeller===NONE ? []
+    : selectedReservaSeller==='sin-asignar' ? reservas.filter(l=>!l.seller)
+    : reservas.filter(l=>l.seller===selectedReservaSeller);
 
   main.innerHTML = `
     <div class="top-row">
@@ -159,6 +170,26 @@ export function renderDashboard(main){
       <div id="vendorDetail">${selectedSeller!==NONE ? leadMiniCardsHtml(sellerDetailList) : ''}</div>
       `}
     </div>
+
+    <div class="panel" style="margin-top:18px;">
+      <h3 style="font-family:'Playfair Display',serif;margin:0 0 4px;font-size:16px;">Reservas por vendedor</h3>
+      <p style="font-size:11.5px;color:var(--ink-dim);margin:0 0 10px;">Clientes en Propuesta (sesión reservada, venta todavía sin cerrar) por vendedor</p>
+      ${porVendedorReservas.length===0 ? '<div class="empty-note">Todavía no hay reservas con vendedor asignado.</div>' : `
+      <table id="reservaVendorTable">
+        <thead><tr><th>Vendedor</th><th>Reservas</th><th>Pendiente por cobrar</th></tr></thead>
+        <tbody>
+          ${porVendedorReservas.map(v=>`
+            <tr class="clickable-row ${selectedReservaSeller===v.key?'active':''}" data-reserva-seller-key="${v.key}">
+              <td>${escapeHtml(v.label)}</td>
+              <td class="mono">${v.reservas}</td>
+              <td class="mono">${money(v.pendiente)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      <div id="reservaVendorDetail">${selectedReservaSeller!==NONE ? leadMiniCardsHtml(reservaDetailList) : ''}</div>
+      `}
+    </div>
   `;
 
   const chipsEl = document.getElementById('rangeChips');
@@ -190,8 +221,20 @@ export function renderDashboard(main){
       };
     });
   }
+  const reservaVendorTable = document.getElementById('reservaVendorTable');
+  if(reservaVendorTable){
+    reservaVendorTable.querySelectorAll('tr[data-reserva-seller-key]').forEach(tr=>{
+      tr.onclick = ()=>{
+        const key = tr.dataset.reservaSellerKey;
+        ui.dashSelectedReservaSeller = ui.dashSelectedReservaSeller===key ? null : key;
+        renderDashboard(main);
+      };
+    });
+  }
   const campaignDetail = document.getElementById('campaignDetail');
   if(campaignDetail) wireMiniCards(campaignDetail);
   const vendorDetail = document.getElementById('vendorDetail');
   if(vendorDetail) wireMiniCards(vendorDetail);
+  const reservaVendorDetail = document.getElementById('reservaVendorDetail');
+  if(reservaVendorDetail) wireMiniCards(reservaVendorDetail);
 }
