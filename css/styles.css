@@ -99,6 +99,9 @@
   tbody td{ padding:10px 8px; border-bottom:1px solid var(--edge); font-size:13px; }
   td.mono{ font-family:'IBM Plex Mono',monospace; font-size:12px; }
   .campaign-tag{ font-size:10px; font-family:'IBM Plex Mono',monospace; padding:2px 8px; border-radius:10px; }
+  .clickable-row{ cursor:pointer; }
+  .clickable-row:hover{ background:var(--panel-2); }
+  .clickable-row.active{ background:var(--panel-2); box-shadow:inset 3px 0 0 var(--terracotta); }
 
   .panel{ background:var(--panel); border:1px solid var(--edge); border-radius:14px; padding:18px; }
 

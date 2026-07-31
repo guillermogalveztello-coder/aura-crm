@@ -1,5 +1,6 @@
 import { state, ui } from '../state.js';
 import { escapeHtml, money, campaignInfo } from '../utils.js';
+import { openClientModal } from '../modals/clientModal.js';
 
 const SELLERS = ['Guillermo', 'Andrea'];
 const RANGE_OPTIONS = [
@@ -8,6 +9,7 @@ const RANGE_OPTIONS = [
   { key:'30d', label:'Últimos 30 días' },
   { key:'anio', label:`Año ${new Date().getFullYear()}` },
 ];
+const NONE = '__none__';
 
 // Las fechas antiguas de venta vienen en formatos mixtos (d/m/aaaa o aaaa-mm-dd).
 // Si no se puede interpretar la fecha, el registro se excluye del rango filtrado.
@@ -36,6 +38,30 @@ function inRange(lead, bounds){
   return d >= bounds[0] && d <= bounds[1];
 }
 
+function leadMiniCardsHtml(list){
+  if(!list.length) return '<div class="empty-note">No hay registros para mostrar aquí.</div>';
+  return `<div class="card-grid" style="margin-top:10px;">${list.map(l=>{
+    const c = campaignInfo(l.campaign);
+    return `
+    <div class="res-card" data-id="${l.id}">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="rc-name">${escapeHtml(l.name)}</span>
+        <span class="campaign-tag" style="background:${c.color}1A;color:${c.color}">${escapeHtml(c.name)}</span>
+      </div>
+      <div class="rc-phone">${escapeHtml(l.phone)||'—'}</div>
+      <div class="rc-money"><span>Total</span><b>${money(l.value)}</b></div>
+      ${l.status==='ganado' ? `<div class="rc-money"><span>Fecha de venta</span><b>${escapeHtml(l.saleDate)||'—'}</b></div>` : `<div class="rc-money"><span>Estado</span><b>${escapeHtml(l.status)}</b></div>`}
+      <div class="rc-actions"><button class="btn small" data-act="edit">Editar</button></div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function wireMiniCards(container){
+  container.querySelectorAll('[data-act="edit"]').forEach(btn=>{
+    btn.onclick = (e)=>{ e.stopPropagation(); const id = parseInt(btn.closest('.res-card').dataset.id,10); openClientModal(id); };
+  });
+}
+
 export function renderDashboard(main){
   if(!ui.dashboardRange) ui.dashboardRange = 'todo';
   const leads = state.leads;
@@ -58,15 +84,23 @@ export function renderDashboard(main){
   const sinCampania = leads.filter(l=>!l.campaign || !state.campaigns[l.campaign]);
   if(sinCampania.length){
     const ventasSc = sinCampania.filter(l=>l.status==='ganado' && inRange(l, bounds));
-    porCampania.push({ key:'', nombre:'Sin campaña', color:'#94A3B8', clientes: sinCampania.length, ventas: ventasSc.length, ingresos: ventasSc.reduce((s,l)=>s+(Number(l.value)||0),0), conv: sinCampania.length ? (ventasSc.length/sinCampania.length*100) : 0 });
+    porCampania.push({ key:'sin-campania', nombre:'Sin campaña', color:'#94A3B8', clientes: sinCampania.length, ventas: ventasSc.length, ingresos: ventasSc.reduce((s,l)=>s+(Number(l.value)||0),0), conv: sinCampania.length ? (ventasSc.length/sinCampania.length*100) : 0 });
   }
 
   const porVendedor = [...SELLERS, ''].map(seller=>{
     const ventas = ganado.filter(l=>(l.seller||'')===seller);
     const ingresos = ventas.reduce((s,l)=>s+(Number(l.value)||0),0);
     const ticket = ventas.length ? ingresos/ventas.length : 0;
-    return { seller: seller || 'Sin asignar', ventas: ventas.length, ingresos, ticket };
-  }).filter(v=>v.ventas>0 || v.seller!=='Sin asignar');
+    return { key: seller || 'sin-asignar', label: seller || 'Sin asignar', ventas: ventas.length, ingresos, ticket };
+  }).filter(v=>v.ventas>0 || v.key!=='sin-asignar');
+
+  const selectedCampaign = ui.dashSelectedCampaign || NONE;
+  const selectedSeller = ui.dashSelectedSeller || NONE;
+  const campaignDetailList = selectedCampaign==='sin-campania' ? sinCampania
+    : selectedCampaign!==NONE ? leads.filter(l=>l.campaign===selectedCampaign) : [];
+  const sellerDetailList = selectedSeller===NONE ? []
+    : selectedSeller==='sin-asignar' ? ganado.filter(l=>!l.seller)
+    : ganado.filter(l=>l.seller===selectedSeller);
 
   main.innerHTML = `
     <div class="top-row">
@@ -84,13 +118,14 @@ export function renderDashboard(main){
     </div>
 
     <div class="panel" style="margin-bottom:18px;">
-      <h3 style="font-family:'Playfair Display',serif;margin:0 0 12px;font-size:16px;">Clientes por campaña (¿por dónde ingresaron?)</h3>
+      <h3 style="font-family:'Playfair Display',serif;margin:0 0 4px;font-size:16px;">Clientes por campaña (¿por dónde ingresaron?)</h3>
+      <p style="font-size:11.5px;color:var(--ink-dim);margin:0 0 10px;">Toca una fila para ver los clientes de esa campaña</p>
       ${porCampania.length===0 ? '<div class="empty-note">Todavía no hay campañas con clientes.</div>' : `
-      <table>
+      <table id="campaignTable">
         <thead><tr><th>Campaña</th><th>Clientes</th><th>Ventas</th><th>Ingresos</th><th>Conversión</th></tr></thead>
         <tbody>
           ${porCampania.map(c=>`
-            <tr>
+            <tr class="clickable-row ${selectedCampaign===c.key?'active':''}" data-campaign-key="${c.key}">
               <td><span class="campaign-tag" style="background:${c.color}1A;color:${c.color}">${escapeHtml(c.nombre)}</span></td>
               <td class="mono">${c.clientes}</td>
               <td class="mono">${c.ventas}</td>
@@ -99,25 +134,30 @@ export function renderDashboard(main){
             </tr>
           `).join('')}
         </tbody>
-      </table>`}
+      </table>
+      <div id="campaignDetail">${selectedCampaign!==NONE ? leadMiniCardsHtml(campaignDetailList) : ''}</div>
+      `}
     </div>
 
     <div class="panel">
-      <h3 style="font-family:'Playfair Display',serif;margin:0 0 12px;font-size:16px;">Ventas por vendedor</h3>
+      <h3 style="font-family:'Playfair Display',serif;margin:0 0 4px;font-size:16px;">Ventas por vendedor</h3>
+      <p style="font-size:11.5px;color:var(--ink-dim);margin:0 0 10px;">Toca una fila para ver el detalle de esas ventas</p>
       ${porVendedor.length===0 ? '<div class="empty-note">Todavía no hay ventas con vendedor asignado.</div>' : `
-      <table>
+      <table id="vendorTable">
         <thead><tr><th>Vendedor</th><th>Ventas</th><th>Ingresos</th><th>Ticket promedio</th></tr></thead>
         <tbody>
           ${porVendedor.map(v=>`
-            <tr>
-              <td>${escapeHtml(v.seller)}</td>
+            <tr class="clickable-row ${selectedSeller===v.key?'active':''}" data-seller-key="${v.key}">
+              <td>${escapeHtml(v.label)}</td>
               <td class="mono">${v.ventas}</td>
               <td class="mono">${money(v.ingresos)}</td>
               <td class="mono">${money(v.ticket)}</td>
             </tr>
           `).join('')}
         </tbody>
-      </table>`}
+      </table>
+      <div id="vendorDetail">${selectedSeller!==NONE ? leadMiniCardsHtml(sellerDetailList) : ''}</div>
+      `}
     </div>
   `;
 
@@ -129,4 +169,29 @@ export function renderDashboard(main){
   chipsEl.querySelectorAll('.chip').forEach(c=>{
     c.onclick = ()=>{ ui.dashboardRange = c.dataset.k; renderDashboard(main); };
   });
+
+  const campaignTable = document.getElementById('campaignTable');
+  if(campaignTable){
+    campaignTable.querySelectorAll('tr[data-campaign-key]').forEach(tr=>{
+      tr.onclick = ()=>{
+        const key = tr.dataset.campaignKey;
+        ui.dashSelectedCampaign = ui.dashSelectedCampaign===key ? null : key;
+        renderDashboard(main);
+      };
+    });
+  }
+  const vendorTable = document.getElementById('vendorTable');
+  if(vendorTable){
+    vendorTable.querySelectorAll('tr[data-seller-key]').forEach(tr=>{
+      tr.onclick = ()=>{
+        const key = tr.dataset.sellerKey;
+        ui.dashSelectedSeller = ui.dashSelectedSeller===key ? null : key;
+        renderDashboard(main);
+      };
+    });
+  }
+  const campaignDetail = document.getElementById('campaignDetail');
+  if(campaignDetail) wireMiniCards(campaignDetail);
+  const vendorDetail = document.getElementById('vendorDetail');
+  if(vendorDetail) wireMiniCards(vendorDetail);
 }
